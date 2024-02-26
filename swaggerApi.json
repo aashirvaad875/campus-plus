@@ -1,0 +1,87 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "v1.0.0",
+    "title": "Campus  plus Demo Project",
+    "description": "Implementation of Swagger with TypeScript"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/"
+    },
+    {
+      "url": "https://localhost:3000/api/"
+    }
+  ],
+  "paths": {
+    "/health_check/": {
+      "get": {
+        "tags": ["Health Check"],
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "tags": ["superadmin"],
+        "summary": "signup for admin...",
+        "description": "",
+        "parameters": [
+          {
+            "name": "superadmin",
+            "in": "body",
+            "schema": {
+              "$ref": "#/components/schemas/superAdmin"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "superAdmin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "admin"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          },
+          "first_name": {
+            "type": "string",
+            "example": "first_name"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "last_name"
+          }
+        },
+        "required": ["email", "password", "first_name", "last_name"]
+      }
+    }
+  }
+}

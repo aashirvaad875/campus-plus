@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Vertical {
+  HASS_ARTS
+  BASE
+  ENERGY
+  INDUSTRY
+  MICRO
+  NEWS
+  HEALTH
+}
+
+model CountryAvailability {
+  id    String  @id @default(uuid())
+  names String?
+  slug  String?
+
+  userId String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([userId, id])
+}
+
+model University {
+  id                        String                      @id @default(uuid())
+  userId                    String
+  Researcher                Researcher?
+  UniversityAttachedWebinar UniversityAttachedWebinar[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Webinar {
+  id String @id @default(uuid())
+
+  userId String
+
+  date     DateTime
+  region   String
+  vertical Vertical
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  topic     String
+  zoomLink  String
+  presenter String
+
+  WebinarTime               WebinarTime?
+  UniversityAttachedWebinar UniversityAttachedWebinar?
+
+  @@index([userId, id])
+}
+
+model WebinarTime {
+  id String @id @default(uuid())
+
+  webinarId String  @unique
+  webinar   Webinar @relation(fields: [webinarId], references: [id], onDelete: Cascade)
+
+  AESTTime String
+  SATime   String
+  QLDTime  String
+  NZTime   String
+  UKTime   String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model UniversityAttachedWebinar {
+  id String @id @default(uuid())
+
+  webinarId String  @unique
+  webinar   Webinar @relation(fields: [webinarId], references: [id], onDelete: Cascade)
+
+  universityId              String
+  university                University                 @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  status                    Boolean
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  deletedAt                 DateTime?
+  ResearcherRegisterWebinar ResearcherRegisterWebinar?
+}
+
+model Researcher {
+  id                        String                      @id @default(uuid())
+  userId                    String
+  universityId              String                      @unique
+  university                University                  @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  ResearcherRegisterWebinar ResearcherRegisterWebinar[]
+
+  curiosityIndex    Float
+  register          Int
+  attended          Int
+  participationTime Int
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([userId, id])
+}
+
+model ResearcherRegisterWebinar {
+  id                          String                    @id @default(uuid())
+  researcherId                String
+  researcher                  Researcher                @relation(fields: [researcherId], references: [id], onDelete: Cascade)
+  universityAttachedWebinarId String                    @unique
+  universityAttachedWebinar   UniversityAttachedWebinar @relation(fields: [universityAttachedWebinarId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
